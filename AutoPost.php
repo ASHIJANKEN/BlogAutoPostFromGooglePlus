@@ -11,7 +11,7 @@
 // 1. ダウンロードしたアーカイブファイルをとりあえず何でもいいので展開
 // 2. 展開したフォルダを7-zipにてパラメータを「cu=on」にして圧縮
 // 3. それをwindows標準の機能で展開(右クリック→すべて展開)。展開したフォルダが文字化けしていれば成功。
-// 4. 29行目からの修正すべき変数を適宜修正。
+// 4. 23行目からの修正すべき変数を適宜修正。
 //    パスの記述をMacに合わせているので、さらにWindowsに合わせるために82行目の「 "/" . 」を消す。
 // 5. このphpファイルを実行。
 ////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@ require_once "IXR_Library.php";
 
 ///////////////////////修正すべき変数ここから///////////////////////////////
 
-$json_path = '/Users/user/Downloads/Takeout/Google+ ストリーム'; //「Google+ ストリーム」フォルダのパス
+$json_files_path = '/Users/user/Downloads/Takeout/Google+ ストリーム'; //「Google+ ストリーム」フォルダのパス
 $xmlrpc_path = "http://wordpressblog.com/xmlrpc.php"; //サーバー上のxmlrpc.phpのパス
 $user = 'user'; // ユーザー名
 $pass = 'password'; // パスワード
@@ -78,8 +78,8 @@ function get_data($post_data_dir){
   $post_hist_id = file($hist_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
   if( is_dir( $post_data_dir ) && $handle = opendir( $post_data_dir ) ) {
-		while( ($file = readdir($handle)) !== false ) {
-			if( filetype( $post_path = $post_data_dir . "/" . $file ) == "file" ) {
+    while( ($file = readdir($handle)) !== false ) {
+      if( filetype( $post_path = $post_data_dir . "/" . $file ) == "file" ) {
         // ファイルを読み込んで連想配列を取得
         $json_data_raw = file_get_contents($post_path);
         $json_data_converted = mb_convert_encoding($json_data_raw, 'UTF-8');
@@ -129,9 +129,9 @@ function get_data($post_data_dir){
           // リストに追加
           $post_data_list[] = $post_info;
         }
-			}
-		}
-	}
+      }
+    }
+  }
   return $post_data_list;
 }
 
@@ -153,17 +153,17 @@ function post_2_blog($post_data_list){
         'post_status' => 'draft', // 投稿状態（draftにすると下書きにできる）
         'post_title'   => $post_data['title'],   // タイトル
         'post_content' => $post_data['content'],      //　本文
-	'post_date_gmt'      => $post_data['published_date'], // 投稿の作成日時。
-	'comment_status' => 'open', //コメントを許可
+  'post_date_gmt'      => $post_data['published_date'], // 投稿の作成日時。
+  'comment_status' => 'open', //コメントを許可
       )
     );
 
     if(!$status){
-    	// 投稿失敗時に、エラーメッセージ・コードを出力
-      	echo $client->getErrorCode().' : '.$client->getErrorMessage() . "]\n";
+      // 投稿失敗時に、エラーメッセージ・コードを出力
+        echo $client->getErrorCode().' : '.$client->getErrorMessage() . "]\n";
         echo 'Post failed : ' . $post_data['title'] . "\n";
     } else {
-     	$postid = $client->getResponse(); // 戻り値は投稿ID
+      $postid = $client->getResponse(); // 戻り値は投稿ID
       echo 'Successfully posted : ' . $post_data['title'] . "\n";
 
       // txtファイルに書き込む
@@ -175,7 +175,9 @@ function post_2_blog($post_data_list){
 }
 
 function main(){
-  $post_data_dir = $json_path;
+  global $json_files_path;
+
+  $post_data_dir = $json_files_path;
   // $post_data_dir = mb_convert_encoding($post_data_dir, 'UTF-8');
 
   echo "Start fetching...\n";
