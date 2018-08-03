@@ -362,7 +362,7 @@ class IXR_Server
     {
         if (!$data) {
             if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-            	header('Content-Type: text/plain'); // merged from WP #9093
+                header('Content-Type: text/plain'); // merged from WP #9093
                 die('XML-RPC server accepts POST requests only.');
             }
 
@@ -679,11 +679,11 @@ class IXR_Client
                 $gettingHeaders = false;
             }
             if (!$gettingHeaders) {
-            	// merged from WP #12559 - remove trim
+                // merged from WP #12559 - remove trim
                 $contents .= $line;
             }
             if ($this->debug) {
-            	$debugContents .= $line;
+                $debugContents .= $line;
             }
         }
         if ($this->debug) {
@@ -1194,6 +1194,8 @@ class IXR_ClientSSL extends IXR_Client
         //        (I swear I've fixed this before... ESP in live... But anyhu...)
         $curl=curl_init('https://' . $this->server . ':' . $this->port . $this->path);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        // curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        // curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
 
         //Since 23Jun2004 (0.1.2) - Made timeout a class field
         curl_setopt($curl, CURLOPT_TIMEOUT, $this->timeout);
